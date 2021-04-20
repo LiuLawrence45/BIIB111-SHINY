@@ -1,2 +1,2 @@
-# BIIB111-Shiny
-Shiny web application for BIIB111 analysis
+# BIIB111-SHINY
+Shiny Web Application for BIIB111 analysis
