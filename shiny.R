@@ -10,11 +10,20 @@ library(dr4pl)
 library(reshape2)
 library(stringr)
 library(shinythemes)
+
+
+
+##edit the path to corresponding absolute path to raw data
 path = 'NSR-REP-02_Covance_ELISPOT_PROD_02JUL2020_v1.xlsx'
 
 data = data.frame(read_excel(path))
 
-# exclude cv.s.t<80%
+
+###########
+#Below is all preprocessing the data
+###########
+
+#exclude cv.s.t<80%
 data.0=data[data$Analyte.ID=='% Cell Viability',]
 data.0=data.0[data.0$Lab.Result.Value>80,]
 data.0=data.0[,c(2,13)]
@@ -30,9 +39,6 @@ data$value=as.numeric(data$value)
 data=data[!is.na(data$value),]
 
 data=merge(data,data.0,by=c('subject','time.point'))
-
-
-####define cvs
 
 n=length(unique(data$assay))
 id=unique(data$assay)
@@ -54,25 +60,13 @@ cvs$id=row.names(cvs)
 
 
 
-########UI
+#USER INTERFACE
 ui <- fluidPage(theme = shinytheme("slate"),
   
   
   sidebarLayout(
     sidebarPanel(
       tags$h4("BIIB111 "),
-      # tags$hr(),
-      # # fileInput("file1", "Choose CSV File :",
-      # #           accept = c(
-      # #             "text/csv",
-      # #             "text/comma-separated-values,text/plain",
-      # #             ".csv")
-      # # ),
-      # #checkboxInput("header", "Header", TRUE),
-      # tags$hr(),
-      # 
-      # 
-      # submitButton("Submit", icon("refresh")),
       
       selectInput("sample", "Choose a sample:",
                   data$subject
@@ -91,6 +85,7 @@ ui <- fluidPage(theme = shinytheme("slate"),
                   tabPanel("Plot", plotOutput("Plot")
                   ),
                   tabPanel("Dataset",
+                           
                     # checkboxInput("checkbox", label = "Display Time Point", value = TRUE),
                     # checkboxInput("checkbox", label = "Display Analyte", value = TRUE),
                     # checkboxInput("checkbox", label = "Display Assay", value = TRUE),hr(),
@@ -140,14 +135,13 @@ server <- function(input, output) {
     legend('topright', id, col=id.color, pch=19, cex=0.5)
     length(cvs[cvs$cv<50,]$cv)/length(cvs$cv)
     
-    #input$cutoff
     cvs.cut=cvs[cvs$mean<500,]
 
     plot(cvs.cut$mean, cvs.cut$cv, xlab="Mean",xlim=c(-50,550),
          ylab = 'CV', col=cvs$color, pch=19, cex=0.2)
      lines(smooth.spline(cvs$mean, cvs$cv,df=4), col='blue', lty=1, lwd=2)
      abline(h=50,lty=2)
-    # lines(smooth.spline(cvs$mean, cvs$cv,df=4), col='blue', lty=1, lwd=2)
+     
     title("CV vs Mean")
     legend('topright', id, col=id.color, pch=19, cex=0.5)
   })
