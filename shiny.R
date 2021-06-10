@@ -10,8 +10,9 @@ library(dr4pl)
 library(reshape2)
 library(stringr)
 library(shinythemes)
+path = 'NSR-REP-02_Covance_ELISPOT_PROD_02JUL2020_v1.xlsx'
 
-data = data.frame(read_excel('NSR-REP-02_Covance_ELISPOT_PROD_02JUL2020_v1.xlsx'))
+data = data.frame(read_excel(path))
 
 # exclude cv.s.t<80%
 data.0=data[data$Analyte.ID=='% Cell Viability',]
@@ -60,6 +61,18 @@ ui <- fluidPage(theme = shinytheme("slate"),
   sidebarLayout(
     sidebarPanel(
       tags$h4("BIIB111 "),
+      # tags$hr(),
+      # # fileInput("file1", "Choose CSV File :",
+      # #           accept = c(
+      # #             "text/csv",
+      # #             "text/comma-separated-values,text/plain",
+      # #             ".csv")
+      # # ),
+      # #checkboxInput("header", "Header", TRUE),
+      # tags$hr(),
+      # 
+      # 
+      # submitButton("Submit", icon("refresh")),
       
       selectInput("sample", "Choose a sample:",
                   data$subject
